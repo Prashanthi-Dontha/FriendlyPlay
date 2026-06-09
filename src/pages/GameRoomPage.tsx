@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import {
   ArrowLeft,
@@ -13,6 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import WordleGame from './GamesRoom/components/WordleGame';
 
 export const GameRoomPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +33,7 @@ export const GameRoomPage: React.FC = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [chatLog, setChatLog] = useState<{ sender: string; text: string }[]>([
     { sender: 'System', text: 'Welcome to the arena! Match is ready.' },
-    { sender: 'MockOpponent', text: 'Good luck, let\'s have a friendly match!' },
+    { sender: 'MockOpponent', text: "Good luck, let's have a friendly match!" },
   ]);
 
   const handleCellClick = (index: number) => {
@@ -100,15 +108,41 @@ export const GameRoomPage: React.FC = () => {
   const statusMessage = winner
     ? `Winner: ${winner === 'X' ? user?.username : 'Opponent'}`
     : isDraw
-    ? 'Game Draw!'
-    : `Next Turn: ${isXNext ? 'Your Turn (X)' : 'Opponent (O)'}`;
+      ? 'Game Draw!'
+      : `Next Turn: ${isXNext ? 'Your Turn (X)' : 'Opponent (O)'}`;
+
+  const gameTitle = (id: string) => {
+    if (id === 'game1') return 'Tic Tac Toe';
+    if (id === 'game2') return 'Chess';
+    if (id === 'Wordle') return 'Wordle';
+    return 'Unknown Game';
+  };
+  const gameDescription = (id: string) => {
+    if (id === 'game1') return '1v1 Match versus opponent. Move pieces strategically.';
+    if (id === 'game2')
+      return 'Get three of your marks in a horizontal, vertical, or diagonal row.';
+    if (id === 'Wordle') return 'Guess the 5 letters word in 6 tries.';
+    return 'Unknown Game';
+  };
+  const renderGameContent = (id: string) => {
+    // if (id === 'game1') return renderTicTacToe();
+    if (id === 'game2') return renderChessboard();
+    return null;
+  };
 
   // Chess Board Mock Layout
   const renderChessboard = () => {
     const boardCells = [];
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     const initialRowPieces: Record<string, string> = {
-      a: '♜', b: '♞', c: '♝', d: '♛', e: '♚', f: '♝', g: '♞', h: '♜'
+      a: '♜',
+      b: '♞',
+      c: '♝',
+      d: '♛',
+      e: '♚',
+      f: '♝',
+      g: '♞',
+      h: '♜',
     };
 
     for (let row = 8; row >= 1; row--) {
@@ -116,13 +150,22 @@ export const GameRoomPage: React.FC = () => {
         const file = files[colIndex];
         const isDark = (row + colIndex) % 2 === 0;
         const cellId = `${file}${row}`;
-        
+
         let piece = '';
         if (row === 8) piece = initialRowPieces[file];
         else if (row === 7) piece = '♟';
         else if (row === 2) piece = '♙';
-        else if (row === 1) piece = initialRowPieces[file].replace('♜','♖').replace('♞','♘').replace('♝','♗').replace('♛','♕').replace('♚','♔').replace('♜','♖').replace('♞','♘').replace('♝','♗');
-        
+        else if (row === 1)
+          piece = initialRowPieces[file]
+            .replace('♜', '♖')
+            .replace('♞', '♘')
+            .replace('♝', '♗')
+            .replace('♛', '♕')
+            .replace('♚', '♔')
+            .replace('♜', '♖')
+            .replace('♞', '♘')
+            .replace('♝', '♗');
+
         // Custom replacement helper for white pieces
         if (row === 1) {
           if (file === 'a' || file === 'h') piece = '♖';
@@ -136,13 +179,15 @@ export const GameRoomPage: React.FC = () => {
           <div
             key={cellId}
             className={`aspect-square flex items-center justify-center text-3xl font-semibold select-none transition-all hover:scale-105 duration-200 cursor-pointer ${
-              isDark ? 'bg-slate-900 border border-slate-950/20' : 'bg-slate-800 border border-slate-900/10'
+              isDark
+                ? 'bg-slate-900 border border-slate-950/20'
+                : 'bg-slate-800 border border-slate-900/10'
             }`}
           >
             <span className={row > 4 ? 'text-indigo-400' : 'text-slate-200 shadow-sm'}>
               {piece}
             </span>
-          </div>
+          </div>,
         );
       }
     }
@@ -170,17 +215,18 @@ export const GameRoomPage: React.FC = () => {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Game Main Stage */}
-        <Card isGlass={true} className="lg:col-span-2 border-slate-900/50 p-6 flex flex-col justify-between">
+        <Card
+          isGlass={true}
+          className="lg:col-span-2 border-slate-900/50 p-6 flex flex-col justify-between"
+        >
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
                 <CardTitle className="text-2xl font-bold text-slate-100">
-                  {id === 'game1' ? 'Friendly Chess' : 'Tic Tac Toe Arena'}
+                  {gameTitle(id || '')}
                 </CardTitle>
                 <CardDescription className="text-slate-400 mt-1">
-                  {id === 'game1'
-                    ? '1v1 Match versus opponent. Move pieces strategically.'
-                    : 'Get three of your marks in a horizontal, vertical, or diagonal row.'}
+                  {gameDescription(id || '')}
                 </CardDescription>
               </div>
               <Button
@@ -224,6 +270,11 @@ export const GameRoomPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+            {id === 'Wordle' && (
+              <div className="w-full flex items-center justify-center">
+                <WordleGame />
               </div>
             )}
           </div>
@@ -276,7 +327,10 @@ export const GameRoomPage: React.FC = () => {
           </Card>
 
           {/* Chat Panel */}
-          <Card isGlass={true} className="border-slate-900/50 flex flex-col h-[320px] overflow-hidden">
+          <Card
+            isGlass={true}
+            className="border-slate-900/50 flex flex-col h-[320px] overflow-hidden"
+          >
             <div className="p-4 border-b border-slate-900/50 flex items-center gap-2">
               <MessageSquare className="h-4.5 w-4.5 text-indigo-400" />
               <span className="text-sm font-semibold text-slate-300">Match Chat</span>
@@ -326,7 +380,11 @@ export const GameRoomPage: React.FC = () => {
                 onChange={(e) => setChatMessage(e.target.value)}
                 className="bg-slate-950/80 border-slate-900 text-xs"
               />
-              <Button type="submit" size="icon" className="h-9 w-9 bg-indigo-600 hover:bg-indigo-500">
+              <Button
+                type="submit"
+                size="icon"
+                className="h-9 w-9 bg-indigo-600 hover:bg-indigo-500"
+              >
                 <Send className="h-3.5 w-3.5" />
               </Button>
             </form>

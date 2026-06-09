@@ -20,42 +20,54 @@ export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
 
   const gamesList: Game[] = [
+    // {
+    //   id: 'game1',
+    //   title: 'Friendly Chess',
+    //   description: 'Clash of intelligence. Challenge a friend in a tactical 1v1 chess match or practice with our custom engine.',
+    //   status: 'active',
+    //   minPlayers: 2,
+    //   maxPlayers: 2,
+    //   currentPlayers: 42,
+    //   icon: 'Crown',
+    //   difficulty: 'Hard',
+    //   category: 'Board',
+    // },
+    // {
+    //   id: 'game2',
+    //   title: 'Tic Tac Toe Arena',
+    //   description: 'Quick-fire rounds of classic 3x3 grids. Make your moves, block your opponent, and secure the winning line.',
+    //   status: 'active',
+    //   minPlayers: 2,
+    //   maxPlayers: 2,
+    //   currentPlayers: 18,
+    //   icon: 'Swords',
+    //   difficulty: 'Easy',
+    //   category: 'Casual',
+    // },
+    // {
+    //   id: 'game3',
+    //   title: 'Memory Match',
+    //   description: 'Train your brain in this card flipping trial. Match identical pairs as fast as possible to claim a high score.',
+    //   status: 'maintenance',
+    //   minPlayers: 1,
+    //   maxPlayers: 4,
+    //   currentPlayers: 0,
+    //   icon: 'Brain',
+    //   difficulty: 'Medium',
+    //   category: 'Puzzle',
+    // },
     {
-      id: 'game1',
-      title: 'Friendly Chess',
-      description: 'Clash of intelligence. Challenge a friend in a tactical 1v1 chess match or practice with our custom engine.',
-      status: 'active',
-      minPlayers: 2,
-      maxPlayers: 2,
-      currentPlayers: 42,
-      icon: 'Crown',
-      difficulty: 'Hard',
-      category: 'Board',
-    },
-    {
-      id: 'game2',
-      title: 'Tic Tac Toe Arena',
-      description: 'Quick-fire rounds of classic 3x3 grids. Make your moves, block your opponent, and secure the winning line.',
-      status: 'active',
-      minPlayers: 2,
-      maxPlayers: 2,
-      currentPlayers: 18,
-      icon: 'Swords',
-      difficulty: 'Easy',
-      category: 'Casual',
-    },
-    {
-      id: 'game3',
-      title: 'Memory Match',
-      description: 'Train your brain in this card flipping trial. Match identical pairs as fast as possible to claim a high score.',
-      status: 'maintenance',
+      id: "Wordle",
+      title: "Wordle",
+      description: "Guess the word in 6 tries",
+      status: "active",
       minPlayers: 1,
-      maxPlayers: 4,
+      maxPlayers: 1,
       currentPlayers: 0,
-      icon: 'Brain',
-      difficulty: 'Medium',
-      category: 'Puzzle',
-    },
+      icon: "Brain",
+      difficulty: "Easy",
+      category: "Puzzle",
+    }
   ];
 
   const getGameIcon = (iconName: string) => {
@@ -125,19 +137,17 @@ export const DashboardPage: React.FC = () => {
               <Card
                 key={game.id}
                 isGlass={true}
-                className={`flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5 ${
-                  isMaintenance ? 'opacity-75' : 'hover:shadow-xl hover:shadow-indigo-500/5 hover:border-slate-800'
-                }`}
+                className={`flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5 ${isMaintenance ? 'opacity-75' : 'hover:shadow-xl hover:shadow-indigo-500/5 hover:border-slate-800'
+                  }`}
               >
                 {/* Accent border on top */}
                 <div
-                  className={`absolute top-0 left-0 right-0 h-[3px] ${
-                    isMaintenance
-                      ? 'bg-slate-700'
-                      : game.id === 'game1'
+                  className={`absolute top-0 left-0 right-0 h-[3px] ${isMaintenance
+                    ? 'bg-slate-700'
+                    : game.id === 'game1'
                       ? 'bg-gradient-to-r from-amber-500 to-yellow-500'
                       : 'bg-gradient-to-r from-rose-500 to-pink-500'
-                  }`}
+                    }`}
                 />
 
                 <CardHeader className="pb-4">
@@ -148,11 +158,10 @@ export const DashboardPage: React.FC = () => {
                     {/* Game Badges */}
                     <div className="flex flex-col items-end gap-1.5">
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                          isMaintenance
-                            ? 'bg-slate-800 text-slate-400 border border-slate-700'
-                            : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/15'
-                        }`}
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${isMaintenance
+                          ? 'bg-slate-800 text-slate-400 border border-slate-700'
+                          : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/15'
+                          }`}
                       >
                         {game.category}
                       </span>
@@ -174,9 +183,8 @@ export const DashboardPage: React.FC = () => {
                     <span className="text-xs text-slate-500 font-medium">Player Count</span>
                     <span className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
                       <span
-                        className={`h-2.5 w-2.5 rounded-full ${
-                          isMaintenance ? 'bg-slate-700' : 'bg-emerald-500 animate-pulse'
-                        }`}
+                        className={`h-2.5 w-2.5 rounded-full ${isMaintenance ? 'bg-slate-700' : 'bg-emerald-500 animate-pulse'
+                          }`}
                       />
                       {isMaintenance ? 'Offline' : `${game.currentPlayers} Active`}
                     </span>
@@ -188,9 +196,8 @@ export const DashboardPage: React.FC = () => {
                     onClick={() => handlePlayGame(game.id)}
                     disabled={isMaintenance}
                     variant={isMaintenance ? 'secondary' : 'default'}
-                    className={`w-full group ${
-                      !isMaintenance && 'bg-slate-900 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500'
-                    }`}
+                    className={`w-full group ${!isMaintenance && 'bg-slate-900 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500'
+                      }`}
                   >
                     {isMaintenance ? (
                       'Under Maintenance'
