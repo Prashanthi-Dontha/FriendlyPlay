@@ -10,10 +10,8 @@ const WordleGame = () => {
   const [wordleColumn, setWordleColumn] = useState(0); // col index
   const [boardStatuses, setBoardStatuses] = useState<LETTER_STATUS[][]>(() => Array.from({ length: 6 }, () => Array(5).fill("EMPTY")))
   const [keyboardStatuses, setKeyboardStatuses] = useState<Record<string, LETTER_STATUS>>({})
-  const [currentGuess, setCurrentGuess] = useState(''); // for input field
 
-  console.log(targetWord, currentGuess, "target");
-  checkGuess(currentGuess.split(""), targetWord)
+
   const handleKeyWord = (key: string) => {
 
     if (key === "DELETE") {
@@ -32,21 +30,32 @@ const WordleGame = () => {
 
       const currentGuess = wordleBoard[wordleRow];
       const rowStatuses = checkGuess(currentGuess, targetWord)
-      console.log(rowStatuses, "rowGuess")
       setBoardStatuses((prev) => prev?.map((row, ridx) => ridx === wordleRow ? rowStatuses : row))
 
+
+      setKeyboardStatuses((prev) => {
+        const updated = { ...prev };
+        currentGuess?.forEach((letter, index) => {
+          const currentStatus = rowStatuses[index];
+          const existingStatus = updated[letter];
+
+          if (existingStatus === "CORRECT") return;
+          if (existingStatus === "PRESENT" && currentStatus === "ABSENT") return;
+
+          updated[letter] = currentStatus;
+        })
+        return updated;
+      })
       if (wordleRow < 5) {
         setWordleRow((prev) => prev + 1);
         setWordleColumn(0);
+        alert(1)
       }
-      // if (currentGuess === targetWord) {
-      //   alert("You won")
-      //   return;
-      // }
-      // if (currentGuess !== targetWord && wordleColumn === 4 && wordleRow === 5) {
-      //   alert("Game over")
-      //   return
-      // }
+
+      else {
+        alert("Game over")
+      }
+      return
 
     }
     if (wordleColumn < 5) {
@@ -55,7 +64,15 @@ const WordleGame = () => {
     }
 
   };
-  console.log(targetWord, wordleBoard, 'targetword');
+
+  const getColorClass = (status: LETTER_STATUS) => {
+    switch (status) {
+      case 'CORRECT': return 'bg-green-600 text-white border-green-600';
+      case 'PRESENT': return 'bg-orange-500 text-white border-orange-500';
+      case 'ABSENT': return 'bg-gray-500 text-white border-gray-500';
+      default: return 'border-blue-300 text-black';
+    }
+  };
   return (
     <div className="flex flex-col w-full mt-16 items-center justify-center">
       <div className="flex flex-col gap-2 items-center">
@@ -63,9 +80,10 @@ const WordleGame = () => {
           return (
             <div key={rowIndex} className="flex gap-2">
               {i?.map((j, index) => {
+                const cellStatus = boardStatuses[rowIndex][index]
                 return (
                   <div key={index}>
-                    <p className="border border-blue-300 rounded-sm w-10 h-10 text-center flex items-center justify-center text-3xl font-bold">
+                    <p className={`border border-blue-300 rounded-sm w-10 h-10 text-center flex items-center justify-center text-3xl font-bold ${getColorClass(cellStatus)}`}>
                       {j}
                     </p>
                   </div>
@@ -80,11 +98,12 @@ const WordleGame = () => {
           <div key={rowIndex} className="flex gap-2">
             {row?.map((key, colIndex) => {
               const isActionKey = key === 'ENTER' || key === 'DELETE';
+              const keyStatus = keyboardStatuses[key] || "EMPTY"
               return (
                 <Button
                   key={colIndex}
                   className={`border h-full p-2 flex items-center justify-center 
-                    ${isActionKey ? 'w-full' : 'min-w-10'}`}
+                    ${isActionKey ? 'w-full' : 'min-w-10'} ${getColorClass(keyStatus)}`}
                   onClick={() => handleKeyWord(key)}
                 >
                   {key}
